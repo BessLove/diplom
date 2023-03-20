@@ -57,14 +57,6 @@ create_tables(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
-# session.commit()
-# q = session.query(Person).filter(Person.person_id == 1, Person.city == 1).all()
-# q = session.query(Seen_persones).filter(Seen_persones.seen_person_id == 123, Seen_persones.user_id_user == 456).all()
-# for i in q:
-#     print(i)
-# print(bool(q))
-# person = Seen_persones(seen_person_id = 555686640, user_id_user = 7889219, liked = False)
-# session.add(person)
-# session.commit()
+
 
 session.close()
