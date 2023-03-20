@@ -106,7 +106,7 @@ def show_all_users(user_id, persons):
                 write_msg(user_id, "Пока((")
                 return
 
-    write_msg(user_id, "Кондидаты закончились")
+    write_msg(user_id, "Кандидаты закончились")
     return True
 
 
