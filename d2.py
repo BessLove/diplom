@@ -20,6 +20,7 @@ class VkApiClient:
         }
 
     def get_user_info(self, user_ids):
+        """Получает информацию о пользователе"""
         params = {
             "user_ids": user_ids,
             "fields": "bdate, city, sex"
@@ -32,6 +33,7 @@ class VkApiClient:
         # return [user_info_dict.get('first_name'), user_info_dict.get('bdate'), user_info_dict.get('sex'), user_info_dict.get('city')['id']]
 
     def search_users(self, user_id, city_id=1, sex=(1, 2), age_from=18, age_to=99):
+        """Ищет подходящих кандидатов"""
         params = {
             "sort": 0,
             "offset": 0,
@@ -66,6 +68,7 @@ class VkApiClient:
         return users_list
 
     def get_user_photos(self, owner_id):
+        """Получает фото кандидатов"""
         params = {
             "owner_id": owner_id,
             "album_id": 'profile',
@@ -90,6 +93,7 @@ class VkApiClient:
             pass
 
     def get_city_id(self, city):
+        """Получает id города"""
         params = {
             # "country_id": 1,
             "q": city,
@@ -103,15 +107,4 @@ class VkApiClient:
 
 vk_client = VkApiClient()
 
-# person = vk_client.search_users(7889219, 1, 1, 16, 24)
-# person_photos = vk_client.get_user_photos('9254819') #555686640
-# pprint(person_photos)
-# user = vk_client.get_user_info('7889219') #44125188   7889219   59303115
-# pprint(person)
-# for pers in person:
-#     print(pers)
-# pprint(user)
-# city = vk_client.get_city_id('москва')
-# print(city)
-# user_name, bdate, sex, city_id = vk_client.get_user_info('7889219')
-# print(user_name)
+

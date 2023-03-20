@@ -76,6 +76,7 @@ def calculate_age(born):
 
 
 def show_all_users(user_id, persons):
+    """Показывает найденных пользователей"""
     for person in persons:
         photos = vk_client.get_user_photos(person['user_id'])
         if photos:
@@ -90,12 +91,13 @@ def show_all_users(user_id, persons):
 
             add_person_to_bd(person)
 
-            # добавляем пару в просмотренные
+            # добавляем кандидата в просмотренные
             add_user_to_seen(person['user_id'], user_id)
             answer = scan_msg(expected_words)[1]
             if answer == 'дальше':
                 continue
             elif answer == 'в избранное':
+                #добавляем кандидата в избранное
                 session.query(Seen_persones).filter(Seen_persones.seen_person_id == person['user_id']).update({"liked": True})
                 session.commit()
 
@@ -103,38 +105,36 @@ def show_all_users(user_id, persons):
             elif answer == 'выход':
                 write_msg(user_id, "Пока((")
                 return
-        # except:
-        #     pass
 
     write_msg(user_id, "Кондидаты закончились")
     return True
 
 
 def show_person(person, photos):
+    """выводит сообщение с информацией о кандидате в чат"""
     person_age = datetime.now().year - int(person['bdate'][-4:])
     age = f", {person_age} {('год', ('лет', 'года')[0 < person_age % 10 < 5])[person_age % 10 != 1]}"
     return f"{person['first_name']} {age}\nhttps://vk.com/id{person['user_id']}", photos
 
 def add_user_to_bd(user_info, user_id):
-    # try:
-        user_bd = User(user_id=user_id, first_name=user_info['first_name'], bdate=user_info.get('bdate', 0),
-                       sex=user_info['sex'],
-                       city=user_info['city'], age=user_info['age'])
-        session.add(user_bd)
-        session.commit()
-    # except:
-    #     pass
+    """Добавляем пользователя в базу данных"""
+    user_bd = User(user_id=user_id, first_name=user_info['first_name'], bdate=user_info.get('bdate', 0),
+                   sex=user_info['sex'],
+                   city=user_info['city'], age=user_info['age'])
+    session.add(user_bd)
+    session.commit()
+
 
 def add_user_to_seen(person_id, user_id):
-    # try:
-        person = Seen_persones(seen_person_id = person_id, user_id_user = user_id, liked = False)
-        session.add(person)
-        session.commit()
-    # except:
-    #     pass
+    """Добавляет кандидата в просмотренные конкретным пользователем"""
+    person = Seen_persones(seen_person_id = person_id, user_id_user = user_id, liked = False)
+    session.add(person)
+    session.commit()
+
 
 
 def get_user_info_from_bd(user_id):
+    """Вытаскивает информацию о пользователе из базы"""
     info = {}
     try:
         info['user_id'] = session.query(User.user_id).filter(User.user_id == user_id).all()[0][0]
@@ -148,12 +148,14 @@ def get_user_info_from_bd(user_id):
     return info
 
 def add_person_to_bd(person):
-    # try:
+    """Добавляет кандидита в базу данных"""
+    try:
         person_bd = Person(person_id=person['user_id'], name = person['first_name'], bdate = person['bdate'], sex = person['sex'], city = person['city'])
         session.add(person_bd)
         session.commit()
-    # except:
-    #     pass
+    except:
+        pass
+
 
 
 token_group = get_token('token_g.txt')

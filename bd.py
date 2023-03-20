@@ -24,7 +24,7 @@ class User(Base):
     age = sq.Column(sq.Integer)
     person = relationship(Seen_persones, backref='user')
 
-    # person = relationship(SeenPersones, backref="user", cascade="all")
+
 
     def __str__(self):
         return f"{self.user_id}, {self.first_name}, {self.bdate}, {self.city}, {self.city}"
@@ -33,7 +33,7 @@ class User(Base):
 class Person(Base):
     __tablename__ = 'person'
 
-    person_id = sq.Column(sq.Integer, primary_key=True, unique=True)
+    person_id = sq.Column(sq.Integer, primary_key=True)
     name = sq.Column(sq.String(length=20))
     bdate = sq.Column(sq.String)
     sex = sq.Column(sq.Integer)
@@ -43,11 +43,6 @@ class Person(Base):
     def __str__(self):
         return f"{self.person_id}, {self.name}, {self.bdate}, {self.sex}, {self.city}"
 
-
-#
-#     # person = relationship(Person, backref="seen_persones", cascade="all")
-#     user = relationship(User, backref="seen_persones", cascade="all")
-# person = relationship(Person, backref="seen_persones", cascade="all")
 
 
 def create_tables(engine):
@@ -68,4 +63,8 @@ session = Session()
 # for i in q:
 #     print(i)
 # print(bool(q))
+# person = Seen_persones(seen_person_id = 555686640, user_id_user = 7889219, liked = False)
+# session.add(person)
+# session.commit()
+
 session.close()
