@@ -78,7 +78,8 @@ def calculate_age(born):
 def show_all_users(user_id, persons):
     """Показывает найденных пользователей"""
     for person in persons:
-        photos = vk_client.get_user_photos(person['user_id'])
+        person_id = person['user_id']  ; print(person_id)
+        photos = vk_client.get_user_photos(person_id)
         if photos:
             expected_words = ('в избранное', 'дальше', 'выход')
             keyboard1 = VkKeyboard(one_time=True)
@@ -89,7 +90,9 @@ def show_all_users(user_id, persons):
             keyboard1 = keyboard1.get_keyboard()
             write_msg(user_id, *show_person(person, photos), keyboard=keyboard1)
 
-            add_person_to_bd(person)
+            q = session.query(Person).filter(Person.person_id == (person_id)).all()
+            if not bool(q):
+                add_person_to_bd(person)
 
             # добавляем кандидата в просмотренные
             add_user_to_seen(person['user_id'], user_id)
