@@ -17,17 +17,19 @@ def get_token(file_name):
 
 
 
-def scan_msg(words: tuple) -> tuple:
+def scan_msg(words) -> tuple:
     """Обрабатывает сообщения в чате"""
     for event in longpoll.listen():
         try:
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 request = event.text.lower()
+                print(request)
                 user_id = event.user_id
                 if request in words:
                     return user_id, request
                 else:
                     write_msg(user_id, "Не поняла вашего ответа...")
+                    continue
         except:
             pass
 
@@ -53,16 +55,15 @@ def ask_missed_info(user_id, user_info):
         try:
             if not key in user_info:
                 write_msg(user_id, f"Введите недостающие данные {vals[key]}: ")
-                for event in longpoll.listen():
-                    if event.type == VkEventType.MESSAGE_NEW:
-                        if event.to_me:
-                            request = event.text.lower()
-                            if key == 'bdate':
-                                filled_info['user_age'] = int(request)
-                                break
-                            elif key == 'city':
-                                filled_info['city'] = vk_client.get_city_id(request)
-                                break
+
+                answers = [str(i) for i in range(100)]
+                request = scan_msg(answers)[1]
+                if key == 'bdate':
+                    filled_info['user_age'] = int(request)
+                    break
+                elif key == 'city':
+                    filled_info['city'] = vk_client.get_city_id(request)
+                    break
         except:
             pass
     return filled_info
