@@ -6,7 +6,7 @@ with open('token_app.txt', "r") as file:
 
 
 class VkApiClient:
-    CNT = 0
+
 
     def __init__(self, base_url: str = "https://api.vk.com/"):
         self.token = token

@@ -1,5 +1,5 @@
 import sqlalchemy as sq
-from sqlalchemy import PrimaryKeyConstraint, ForeignKeyConstraint
+from sqlalchemy import PrimaryKeyConstraint
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 
 Base = declarative_base()
@@ -8,9 +8,8 @@ Base = declarative_base()
 class Seen_persones(Base):
     __tablename__ = 'seen_persones'
     __table_args__ = (PrimaryKeyConstraint('seen_person_id', 'user_id_user', name = 'pk'),)
-                      # ForeignKeyConstraint(['seen_person_id'],['person.person_id']))
 
-    # id = sq.Column(sq.Integer, primary_key=True)
+
     seen_person_id = sq.Column(sq.Integer, sq.ForeignKey("person.person_id"))
     user_id_user = sq.Column(sq.Integer, sq.ForeignKey("user.user_id"))
     liked = sq.Column(sq.Boolean, default=False)
