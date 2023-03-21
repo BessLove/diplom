@@ -25,19 +25,23 @@ class VkApiClient:
             "user_ids": user_ids,
             "fields": "bdate, city, sex"
         }
-        user_info_dict = requests.get(f"{self.base_url}/method/users.get",
-                                      params={**params, **self.general_params()}).json()['response'][0]
-        if user_info_dict.get('city'):
-            user_info_dict['city'] = user_info_dict.get('city', {}).get('id')
-        return user_info_dict
+        try:
+            user_info_dict = requests.get(f"{self.base_url}/method/users.get",
+                                          params={**params, **self.general_params()}).json()['response'][0]
+            if user_info_dict.get('city'):
+                user_info_dict['city'] = user_info_dict.get('city', {}).get('id')
+
+            return user_info_dict
+        except KeyError:
+            pass
         # return [user_info_dict.get('first_name'), user_info_dict.get('bdate'), user_info_dict.get('sex'), user_info_dict.get('city')['id']]
 
-    def search_users(self, user_id, city_id=1, sex=(1, 2), age_from=18, age_to=99):
+    def search_users(self, offset, user_id, city_id=1, sex=(1, 2), age_from=18, age_to=99):
         """Ищет подходящих кандидатов"""
         params = {
             "sort": 0,
-            "offset": 0,
-            "count": 300,
+            "offset": offset,
+            "count": 50,
             "city_id": city_id,
             "sex": sex,
             "status": (1, 6),
@@ -46,26 +50,29 @@ class VkApiClient:
             "has_photo": 1,
             "fields": "bdate, city, sex, relation"
         }
-        users = requests.get(f"{self.base_url}/method/users.search",
-                             params={**params, **self.general_params()}).json()['response']['items']
+        try:
+            users = requests.get(f"{self.base_url}/method/users.search",
+                                 params={**params, **self.general_params()}).json()['response']['items']
 
-        # return requests.get(f"{self.base_url}/method/users.search",
-        #                     params={**params, **self.general_params()}).json()['response']['items']
+            # return requests.get(f"{self.base_url}/method/users.search",
+            #                     params={**params, **self.general_params()}).json()['response']['items']
 
-        users_list = []
-        for user in users:
-            if not user['is_closed'] and user.get('city', {}).get('id') == 1:
-                person_id = user.get('id')
-                # проверяем есть ли пара в просмотренных
-                q = session.query(Seen_persones).filter(Seen_persones.seen_person_id == person_id,
-                                                        Seen_persones.user_id_user == user_id).all()
-                if not bool(q):
-                    users_list.append(
-                        {'user_id': person_id, 'first_name': user.get('first_name'), 'bdate': user.get('bdate'),
-                         'sex': user.get('sex'), 'city': user.get('city', {}).get('id')})
-                else:
-                    continue
-        return users_list
+            users_list = []
+            for user in users:
+                if not user['is_closed'] and user.get('city', {}).get('id') == city_id:
+                    person_id = user.get('id')
+                    # проверяем есть ли пара в просмотренных
+                    q = session.query(Seen_persones).filter(Seen_persones.seen_person_id == person_id,
+                                                            Seen_persones.user_id_user == user_id).all()
+                    if not bool(q):
+                        users_list.append(
+                            {'user_id': person_id, 'first_name': user.get('first_name'), 'bdate': user.get('bdate'),
+                             'sex': user.get('sex'), 'city': user.get('city', {}).get('id')})
+                    else:
+                        continue
+            return users_list
+        except KeyError:
+            pass
 
     def get_user_photos(self, owner_id):
         """Получает фото кандидатов"""
@@ -99,10 +106,14 @@ class VkApiClient:
             "q": city,
             "count": 1
         }
-        city_id = requests.get(f"{self.base_url}/method/database.getCities",
-                               params={**params, **self.general_params()}).json()['response']['items'][0]['id']
+        try:
 
-        return city_id
+            city_id = requests.get(f"{self.base_url}/method/database.getCities",
+                                   params={**params, **self.general_params()}).json()['response']['items'][0]['id']
+
+            return city_id
+        except KeyError:
+            pass
 
 
 vk_client = VkApiClient()
