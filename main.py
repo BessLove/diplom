@@ -108,10 +108,10 @@ def show_all_users(user_id, persons):
                 continue
             elif answer == 'выход':
                 write_msg(user_id, "Пока((")
-                return
+                return True
 
     # write_msg(user_id, "Кандидаты закончились")
-    return True
+    # return True
 
 
 def show_person(person, photos):
@@ -199,7 +199,8 @@ def main():
                                                  user_info['age'] + 4)
                 pprint(persons)
 
-                show_all_users(user_id, persons)
+                if show_all_users(user_id, persons):
+                    break
                 offset +=50
             else:
                 write_msg(user_id, "Кандидаты закончились")
@@ -207,6 +208,7 @@ def main():
 
     elif request == "пока":
         write_msg(user_id, "Пока((")
+        return
 
 
 while True:
